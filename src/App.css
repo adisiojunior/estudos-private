@@ -40,3 +40,53 @@
 .read-the-docs {
   color: #888;
 }
+
+.chart {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.scale {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-right: 10px; /* Ajuste de margem para separar a escala das barras */
+}
+
+.scale-line {
+  width: 100%;
+  border-bottom: 1px solid #ccc; /* Linha horizontal */
+}
+
+.scale-value {
+  margin-right: 5px; /* Espaçamento entre o valor da escala e a linha horizontal */
+}
+
+.bars {
+  display: flex;
+  flex-direction: column;
+}
+
+.bar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  width: 100%; /* Garante que as barras ocupem todo o espaço disponível */
+}
+
+.bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.bar-fill {
+  background-color: #007bff; /* Cor da barra */
+  width: 20px; /* Largura da barra */
+}
+
+.bar-label {
+  margin-top: 5px; /* Espaçamento entre a barra e o rótulo */
+  font-size: 12px;
+}

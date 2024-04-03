@@ -44,11 +44,11 @@ const FiliaisLine: React.FC<FiliaisLineProps> = ({ filiaisUnicas }) => {
           <div
             key={index}
             style={{
-              padding: '5px',
+
               color: '#808080',
               marginBottom: '5px',
               flex: 'auto',
-              marginRight: '10px', 
+              marginLeft: '10px', 
               minWidth: '97px',
               width: '100%',
             }}

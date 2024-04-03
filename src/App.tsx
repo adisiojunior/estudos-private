@@ -1,6 +1,8 @@
 
 import React, { useState } from 'react';
 import CardGrafico from './componentes/CardGrafico';
+import GraficoLib from './componentes/GraficoLib';
+import Tabela from './componentes/Tabela';
 
 function App() {
   const dados = [
@@ -32,6 +34,15 @@ function App() {
       "atendimento": "com atraso"
     },
     {
+      "regional": "I",
+      "filial": "BRB",
+      "equipamento": "25201",
+      "imposicao": "24/01/2024",
+      "dias_sem_coletas": 31,
+      "data_coleta": null,
+      "atendimento": "pendente"
+    },
+    {
       "regional": "II",
       "filial": "TTR",
       "equipamento": "25202",
@@ -39,6 +50,15 @@ function App() {
       "dias_sem_coletas": 32,
       "data_coleta": null,
       "atendimento": "pendente"
+    },
+    {
+      "regional": "II",
+      "filial": "TTR",
+      "equipamento": "25202",
+      "imposicao": "24/01/2024",
+      "dias_sem_coletas": 32,
+      "data_coleta": null,
+      "atendimento": "com atraso"
     },
     {
       "regional": "I",
@@ -68,6 +88,15 @@ function App() {
       "atendimento": "com atraso"
     },
     {
+      "regional": "III",
+      "filial": "ADD",
+      "equipamento": "25201",
+      "imposicao": "23/01/2024",
+      "dias_sem_coletas": 31,
+      "data_coleta": "26/02/2024",
+      "atendimento": "pendente"
+    },
+    {
       "regional": "I",
       "filial": "SÃO",
       "equipamento": "25202",
@@ -93,6 +122,15 @@ function App() {
       "dias_sem_coletas": 34,
       "data_coleta": "26/02/2024",
       "atendimento": "com atraso"
+    },
+    {
+      "regional": "II",
+      "filial": "SSW",
+      "equipamento": "25202",
+      "imposicao": "26/01/2024",
+      "dias_sem_coletas": 34,
+      "data_coleta": "26/02/2024",
+      "atendimento": "pendente"
     },
     {
       "regional": "I",
@@ -150,6 +188,15 @@ function App() {
     },
     {
       "regional": "I",
+      "filial": "FFF",
+      "equipamento": "25204",
+      "imposicao": "26/01/2024",
+      "dias_sem_coletas": 34,
+      "data_coleta": "26/02/2024",
+      "atendimento": "pendente"
+    },
+    {
+      "regional": "I",
       "filial": "MAO",
       "equipamento": "25201",
       "imposicao": "23/01/2024",
@@ -185,7 +232,7 @@ function App() {
       "atendimento": "no prazo"
     }
   ];
-  
+
   const [filtroRegional, setFiltroRegional] = useState('');
   const [filtroFilial, setFiltroFilial] = useState('');
   const [filtroData, setFiltroData] = useState('');
@@ -277,12 +324,8 @@ function App() {
       </tbody>
     </table>
     <div>
-      <h1>Gráfico</h1>
-        <CardGrafico 
-          dados={dados}
-          filtroRegional={filtroRegional} 
-          filtroFilial={filtroFilial}
-        />
+      <h1>Gráfico</h1>        
+        <Tabela />
     </div>
   </div>
   

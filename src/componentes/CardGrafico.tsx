@@ -1,132 +1,136 @@
 import React from 'react';
-import 'chart.js/auto';
-import { Bar } from 'react-chartjs-2';
-import { Props, Dataset } from '../../src/interfaces/GraphInterfaces';
-import FiliaisLine from './LiliaisLine';
+import '../App.css';
 
-const CardGrafico: React.FC<Props> = ({ dados, filtroRegional, filtroFilial }) => {
+interface Dados {
+  filial: string;
+  regional: string;
+  atendimento: 'no prazo' | 'com atraso' | 'pendente';
+}
 
-  const formatarLabelsEixoX = (filiaisUnicas: string[]) => {
-    return filiaisUnicas.map(filial => {
-      const match = filial.match(/^(.*?)\s*\(([^)]+)\)$/);
-      if (match) {
-        const nomeFilial = match[1];
-        const regional = match[2];
-        return `${nomeFilial} ${regional}`;
-      } else {
-        return filial;
-      }
-    });
-  };
-
-
-  const prepararDadosGrafico = () => {
-    const datasets: Dataset[] = [
-      { label: 'com atraso', backgroundColor: 'blue', data: [] },
-      { label: 'no prazo', backgroundColor: 'green', data: [] },
-      { label: 'pendente', backgroundColor: 'red', data: [] }
-    ];
-
-    let totalGeralAtraso = 0;
-    let totalGeralNoPrazo = 0;
-    let totalGeralPendente = 0;
-
-    let dadosFiltrados = dados;
-    if (filtroRegional) {
-      dadosFiltrados = dadosFiltrados.filter(item => item.regional === filtroRegional);
+const CardGrafico: React.FC<{ dados: Dados[] }> = ({ dados }) => {
+  // Agrupando as filiais por regional, mantendo apenas uma filial de cada nome
+  const agrupadoPorRegional: { [key: string]: string[] } = {};
+  dados.forEach(item => {
+    if (!agrupadoPorRegional[item.regional]) {
+      agrupadoPorRegional[item.regional] = [];
     }
-    if (filtroFilial) {
-      dadosFiltrados = dadosFiltrados.filter(item => item.filial === filtroFilial);
+    if (!agrupadoPorRegional[item.regional].includes(item.filial)) {
+      agrupadoPorRegional[item.regional].push(item.filial);
     }
+  });
 
-    const filiaisComRegional = dadosFiltrados.map(item => `${item.filial} (${item.regional})`);
-
-    const filiaisUnicas: string[] = Array.from(new Set(filiaisComRegional));
-
-    filiaisUnicas.sort((a, b) => {
-      const matchA = a.match(/\(([^)]+)\)$/);
-      const matchB = b.match(/\(([^)]+)\)$/);
-      
-      const regionalA = matchA ? matchA[1] : ''; 
-      const regionalB = matchB ? matchB[1] : ''; 
-      
-      const regionalNumericaA = regionalA === 'I' ? 1 : regionalA === 'II' ? 2 : 3;
-      const regionalNumericaB = regionalB === 'I' ? 1 : regionalB === 'II' ? 2 : 3;
-    
-      return regionalNumericaA - regionalNumericaB;
-    });
-
-    filiaisUnicas.forEach(filial => {
-      let atrasoCount = 0;
-      let noPrazoCount = 0;
-      let pendenteCount = 0;
-
-      const dadosFilial = dadosFiltrados.filter(item => `${item.filial} (${item.regional})` === filial);
-
-      dadosFilial.forEach(item => {
-        if (item.atendimento === 'com atraso') {
-          atrasoCount++;
-          totalGeralAtraso++;
-        } else if (item.atendimento === 'no prazo') {
-          noPrazoCount++;
-          totalGeralNoPrazo++;
-        } else if (item.atendimento === 'pendente') {
-          pendenteCount++;
-          totalGeralPendente++;
-        }
-      });
-
-      datasets[0].data.push(atrasoCount);
-      datasets[1].data.push(noPrazoCount);
-      datasets[2].data.push(pendenteCount);
-    });
-
-    datasets[0].data.push(totalGeralAtraso);
-    datasets[1].data.push(totalGeralNoPrazo);
-    datasets[2].data.push(totalGeralPendente);
-
-    return {
-      labels: [...formatarLabelsEixoX(filiaisUnicas), 'Total Geral'], 
-      datasets: datasets
+  // Função para calcular o total de cada tipo de atendimento para todas as filiais
+  const calcularTotalGeral = () => {
+    const totalGeral = {
+      'no prazo': 0,
+      'com atraso': 0,
+      'pendente': 0
     };
+    dados.forEach(item => {
+      totalGeral[item.atendimento]++;
+    });
+    return totalGeral;
   };
 
-  const options = {
-    maintainAspectRatio: false,
-    scales: {
-      x: {
-        stacked: false,
-        beginAtZero: true,
-        suggestedMin: 0, 
-        suggestedMax: 10,
-        display: false,
+  // Total geral de atendimentos
+  const totalGeral = calcularTotalGeral();
 
-      },
-      y: {
-        stacked: false,
-        stepSize: 1 
+  // Função para calcular a altura da barra de acordo com o valor
+  const calcularAlturaBarra = (valor: number) => {
+    const alturaMaxima = 200; // Altura máxima da barra
+    const valorMaximo = Math.max(totalGeral['no prazo'], totalGeral['com atraso'], totalGeral['pendente']); // Valor máximo entre os tipos de atendimento
+    return (valor / valorMaximo) * alturaMaxima; // Calcula a altura proporcional ao valor
+  };
+
+  // Função para calcular o total de cada tipo de atendimento para cada filial
+  const calcularTotalFiliais = (filial: string) => {
+    const totalFiliais = {
+      'no prazo': 0,
+      'com atraso': 0,
+      'pendente': 0
+    };
+    dados.forEach(item => {
+      if (item.filial === filial) {
+        totalFiliais[item.atendimento]++;
       }
-    },
-    plugins: {
-      legend: {
-        position: 'right' as const 
-      },
-    }
+    });
+    return totalFiliais;
   };
+
+  // Array de escalas para o eixo Y
+  const escalas = Array.from({ length: 6 }, (_, index) => (5 - index) * 20);
 
   return (
-    <div>
-      <h2>Gráfico de Barras</h2>
-      <div style={{ height: '400px', width: '1200px' }}>
-        <Bar
-          id="chart"
-          data={prepararDadosGrafico()}
-          options={options}
-        />
+    <div className="chart" style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+      {/* Eixo Y */}
+      <div style={{ display: 'flex', flexDirection: 'column', marginRight: '20px' }}>
+        {escalas.map((escala, index) => (
+          <div key={index} style={{ height: '20px', width: '30px', borderRight: '1px solid #ccc', marginBottom: '10px', display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end' }}>
+            {escala}
+          </div>
+        ))}
       </div>
-      <FiliaisLine filiaisUnicas={prepararDadosGrafico().labels} />
 
+      {/* Total Geral */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+            <div style={{ backgroundColor: 'green', width: '30px', height: `${calcularAlturaBarra(totalGeral['no prazo'])}px`, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+              {totalGeral['no prazo']}
+            </div>
+            <div style={{ backgroundColor: 'red', width: '30px', height: `${calcularAlturaBarra(totalGeral['com atraso'])}px`, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+              {totalGeral['com atraso']}
+            </div>
+            <div style={{ backgroundColor: 'blue', width: '30px', height: `${calcularAlturaBarra(totalGeral['pendente'])}px`, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+              {totalGeral['pendente']}
+            </div>
+          </div>
+        </div>
+        <div style={{ flexGrow: 1, border: '1px solid #ccc', padding: '5px', marginBottom: '10px', position: 'relative' }}>
+          <div style={{ marginBottom: '5px', textAlign: 'center' }}>Total Geral</div>
+        </div>
+      </div>
 
+      {/* Agrupamento de filiais por regional */}
+      <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+        {Object.keys(agrupadoPorRegional).map((regional, index) => (
+          <div key={index} style={{ flexGrow: 1, padding: '5px', marginBottom: '10px', marginRight: '20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              {agrupadoPorRegional[regional].map((filial, idx) => {
+                const totalFiliais = calcularTotalFiliais(filial);
+                return (
+                  <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '10px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-around', width: '100%' }}>
+                      <div style={{ backgroundColor: 'green', width: '30px', height: `${calcularAlturaBarra(totalFiliais['no prazo'])}px`, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+                        {totalFiliais['no prazo']}
+                      </div>
+                      <div style={{ backgroundColor: 'red', width: '30px', height: `${calcularAlturaBarra(totalFiliais['com atraso'])}px`, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+                        {totalFiliais['com atraso']}
+                      </div>
+                      <div style={{ backgroundColor: 'blue', width: '30px', height: `${calcularAlturaBarra(totalFiliais['pendente'])}px`, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+                        {totalFiliais['pendente']}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginRight: '20px', border: '1px solid #ccc' }}>
+              
+              <div style={{ display: 'flex' }}>
+                {agrupadoPorRegional[regional].map((filial, idx) => (
+                  <div key={idx} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', padding: '10px', marginBottom: '10px', marginRight: '10px' }}>
+                    <div style={{ marginBottom: '5px', textAlign: 'center', fontWeight: 'bold' }}>{filial}</div>
+                  </div>
+                ))}
+                
+              </div>
+              <div style={{ marginBottom: '5px', alignItems: 'center' }}>Reg {regional}</div>
+            </div>
+
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

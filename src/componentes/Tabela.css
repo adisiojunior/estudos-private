@@ -8,33 +8,52 @@ div.tabela {
   margin-left: 4px;
   display: flex;
   flex-direction: row;
+  overflow-x: auto; 
+  max-width: 1650px;
 }
 
 table {
   border-collapse: separate;
-  text-indent: initial;
-  border-spacing: 0px !important; 
+  border-spacing: 0px;
 }
+
+
+
 
 .tabela th,
 .tabela td {
-  padding: 0 !important; 
-  z-index: 0;
 
 }
+
+.td-spacing {
+  padding: 8px;
+}
+
 
 .tabela td {
   border: none;
-  padding-right: 8px !important;
-  padding-left: 8px !important;
+  padding-right: 2px !important;
+  padding-left: 4px !important;
+  border-left: none;
+  border-right: none;
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
 }
+
+.tabela td > div {
+  position: relative;
+  z-index: 999; /* Coloca o conteúdo sobre a borda */
+}
+
 .tabela td.primeiro-td {
   border-top: none;
+  padding-right: 8px !important;
+  padding-left: 8px !important;
 }
 
 .tabela th {
   border: 1px solid #000;
-  
+  font-weight: normal;
 }
 
 .tabela th:first-child,
@@ -42,41 +61,48 @@ table {
   text-align: center;
 }
 
-.tabela th:first-child {
-  width: 100px;
-  
-}
-
-.tabela th:nth-child(2),
-.tabela td:nth-child(2) {
-  width: 130px;  
-}
-
-.tabela th:nth-child(n+3),
-.tabela td:nth-child(n+3) {
-  width: 150px;
+.caixa-verde,
+.caixa-azul,
+.caixa-vermelha {
+  margin: 0px !important;
 }
 
 .caixa-verde {
-  width: 40px;
+  width: 18px;
   height: 30px;
   background-color: green;
-  margin: 0px;
 
 }
 
+
 .caixa-azul {
-  width: 40px;
+  width: 18px;
   height: 30px;
   background-color: blue;
-  margin: 0px;
+
 }
 
 .caixa-vermelha {
-  width: 40px;
+  width: 18px;
   height: 30px;
   background-color: red;
-  margin: 0px;
+
+}
+
+.caixa-vermelha-no-border {
+  width: 2px;
+  height: 30px;
+  background-color: red;
+}
+.caixa-verde-no-border {
+  width: 2px;
+  height: 30px;
+  background-color: green;
+}
+.caixa-azul-no-border {
+  width: 2px;
+  height: 30px;
+  background-color: transparent;
 }
 .tabela-container {
   display: flex;
@@ -137,7 +163,8 @@ table {
   border-top: none !important;
 }
 
-.{
+
+.no-border-estilization-bottom {
   border-bottom: none !important;
 }
 
@@ -148,3 +175,5 @@ table {
 .no-border-estilization-left {
   border-left: none !important;
 }
+
+

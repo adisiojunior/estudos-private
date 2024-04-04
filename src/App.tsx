@@ -324,7 +324,7 @@ function App() {
       </tbody>
     </table>
     <div>
-      <h1>Gráfico</h1>        
+      <h1>Gráfico</h1>      
         <Tabela />
     </div>
   </div>

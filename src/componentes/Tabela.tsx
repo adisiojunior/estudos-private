@@ -13,6 +13,24 @@ const dados = [
   },
   {
     "regional": "I",
+    "filial": "MAO",
+    "equipamento": "25201",
+    "imposicao": "23/01/2024",
+    "dias_sem_coletas": 0,
+    "data_coleta": "23/01/2024",
+    "atendimento": "no prazo"
+  },
+  {
+    "regional": "I",
+    "filial": "MAO",
+    "equipamento": "25201",
+    "imposicao": "23/01/2024",
+    "dias_sem_coletas": 0,
+    "data_coleta": "23/01/2024",
+    "atendimento": "pendente"
+  },
+  {
+    "regional": "I",
     "filial": "SÃO",
     "equipamento": "25202",
     "imposicao": "24/01/2024",
@@ -262,19 +280,46 @@ function Tabela() {
     return acc;
   }, { noPrazo: 0, comAtraso: 0, pendente: 0 });
 
+
   const maiorTotal = Math.max(
-    ...totalPorRegional.map(total => total.noPrazo + total.comAtraso + total.pendente)
+    totalGeral.noPrazo, totalGeral.comAtraso, totalGeral.pendente
   );
-  const numeros = Array.from({ length: maiorTotal }, (_, i) => maiorTotal - i);
+
+
+
+  let numeros;
+
+  if (maiorTotal <= 15) {
+    numeros = Array.from({ length: maiorTotal }, (_, i) => maiorTotal - i);
+  } else if (maiorTotal <= 30) {
+    numeros = Array.from({ length: 15 }, (_, i) => 15 - i * 2);
+  } else if (maiorTotal <= 45) {
+    numeros = Array.from({ length: 15 }, (_, i) => 45 - i * 3);
+
+    numeros = numeros.map(num => num - 2);
+  } else if (maiorTotal <= 60) {
+    numeros = Array.from({ length: 15 }, (_, i) => 60 - i * 4);
+
+    numeros = numeros.map(num => num - 3);
+  } else if (maiorTotal <= 75) {
+    numeros = Array.from({ length: 15 }, (_, i) => 75 - i * 5);
+
+    numeros = numeros.map(num => num - 4);
+  } else {
+    numeros = Array.from({ length: 15 }, (_, i) => 90 - i * 6);
+
+    numeros = numeros.map(num => num - 5);
+  }
+
 
   return (
     <div className="tabela-container">
       <div className="tabela-wrapper">
         <div className="tabela">
-          <table>
+          <table style={{ overflowX: 'auto' }}>
             <tbody>
               <tr>
-                <th className="no-border" style={{ borderBottom: 'none', transform: 'translateY(-15px)', fontWeight: 'normal' }}>0</th>
+                <th className="no-border" style={{ borderBottom: 'none', transform: 'translateY(-15px)', fontWeight: 'normal', paddingLeft: '8px', paddingRight: '8px' }}>0</th>
                 <th className="no-border-estilization-bottom" colSpan="3">Total </th>
                 {filiaisPorRegional.map((regional, index) => (
                   <React.Fragment key={index}>
@@ -297,12 +342,14 @@ function Tabela() {
               </tr>
             </tbody>
             <thead>
-              {numeros.map((numero, index) => (
+            {numeros.map((numero, index) => (
                 <tr key={index}>
                   <td className="primeiro-td" style={{ transform: 'translateY(-15px)' }}>{numero}</td>
                   <td>{totalGeral.noPrazo >= numero ? <div className="caixa-verde"></div> : null}</td>
                   <td>{totalGeral.comAtraso >= numero ? <div className="caixa-azul"></div> : null}</td>
                   <td>{totalGeral.pendente >= numero ? <div className="caixa-vermelha"></div> : null}</td>
+
+
                   {filiaisPorRegional.map((regional, idx) => (
                     <React.Fragment key={idx}>
                       {regional.filiais.map((filial, fIdx) => {
@@ -311,6 +358,7 @@ function Tabela() {
                         const totalEmAtraso = dadosFiltrados.filter(item => item.atendimento === "com atraso").length;
                         const totalPendente = dadosFiltrados.filter(item => item.atendimento === "pendente").length;
                         return (
+
                           <React.Fragment key={fIdx}>
                             <td>{totalNoPrazo >= numero ? <div className="caixa-verde"></div> : null}</td>
                             <td>{totalEmAtraso >= numero ? <div className="caixa-azul"></div> : null}</td>
@@ -323,22 +371,22 @@ function Tabela() {
                 </tr>
               ))}
             </thead>
-            
+
           </table>
           <div className="legenda-container">
-              <div className="legenda-item">
-                <div className="caixa-legenda caixa-verde"></div>
-                <span>No Prazo</span>
-              </div>
-              <div className="legenda-item">
-                <div className="caixa-legenda caixa-azul"></div>
-                <span>Com Atraso</span>
-              </div>
-              <div className="legenda-item">
-                <div className="caixa-legenda caixa-vermelha"></div>
-                <span>Pendente</span>
-              </div>
+            <div className="legenda-item">
+              <div className="caixa-legenda caixa-verde"></div>
+              <span>No Prazo</span>
             </div>
+            <div className="legenda-item">
+              <div className="caixa-legenda caixa-azul"></div>
+              <span>Com Atraso</span>
+            </div>
+            <div className="legenda-item">
+              <div className="caixa-legenda caixa-vermelha"></div>
+              <span>Pendente</span>
+            </div>
+          </div>
         </div>
       </div>
 
